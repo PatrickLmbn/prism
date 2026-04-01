@@ -1,4 +1,9 @@
-const OPENROUTER_API_KEY = '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';
+try {
+  importScripts('config.js');
+} catch (e) {
+  console.error("config.js not found. Please create it from config.example.js.");
+}
+
 const API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 
 chrome.runtime.onInstalled.addListener(() => {
