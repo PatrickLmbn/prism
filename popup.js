@@ -1,11 +1,12 @@
 // Load saved settings
-chrome.storage.local.get(['autoSuggest', 'blockEmail', 'blockSensitive', 'blockPassword', 'tone', 'showExplanations', 'showManual'], (result) => {
+chrome.storage.local.get(['autoSuggest', 'blockEmail', 'blockSensitive', 'blockPassword', 'tone', 'showExplanations', 'showManual', 'showButton'], (result) => {
     document.getElementById('autoSuggestToggle').checked = result.autoSuggest || false;
     document.getElementById('blockEmailToggle').checked = result.blockEmail !== false;
     document.getElementById('blockSensitiveToggle').checked = result.blockSensitive !== false;
     document.getElementById('blockPasswordToggle').checked = result.blockPassword !== false;
     document.getElementById('toneSelect').value = result.tone || 'Professional';
     document.getElementById('showExplanationsToggle').checked = result.showExplanations || false;
+    document.getElementById('showButtonToggle').checked = result.showButton !== false;
     
     // Toggle manual section visibility
     const showManual = result.showManual || false;
@@ -25,6 +26,9 @@ document.getElementById('blockSensitiveToggle').addEventListener('change', (e) =
 });
 document.getElementById('blockPasswordToggle').addEventListener('change', (e) => {
     chrome.storage.local.set({ blockPassword: e.target.checked });
+});
+document.getElementById('showButtonToggle').addEventListener('change', (e) => {
+    chrome.storage.local.set({ showButton: e.target.checked });
 });
 document.getElementById('toneSelect').addEventListener('change', (e) => {
     chrome.storage.local.set({ tone: e.target.value });

@@ -28,14 +28,17 @@ function safeTrim(val) {
 let tone = 'Professional';
 let showExplanations = false;
 
+let showButton = true;
+
 // Load initial state
-chrome.storage.local.get(['autoSuggest', 'blockEmail', 'blockSensitive', 'blockPassword', 'tone', 'showExplanations'], (result) => {
+chrome.storage.local.get(['autoSuggest', 'blockEmail', 'blockSensitive', 'blockPassword', 'tone', 'showExplanations', 'showButton'], (result) => {
   autoSuggestEnabled = result.autoSuggest || false;
   blockEmail = result.blockEmail !== false;
   blockSensitive = result.blockSensitive !== false;
   blockPassword = result.blockPassword !== false;
   tone = result.tone || 'Professional';
   showExplanations = result.showExplanations || false;
+  showButton = result.showButton !== false;
 });
 
 // Listen for state changes
@@ -46,6 +49,7 @@ chrome.storage.onChanged.addListener((changes) => {
   if (changes.blockPassword) blockPassword = changes.blockPassword.newValue;
   if (changes.tone) tone = changes.tone.newValue;
   if (changes.showExplanations) showExplanations = changes.showExplanations.newValue;
+  if (changes.showButton) showButton = changes.showButton.newValue;
 });
 
 function isProtectedField(el) {
@@ -389,7 +393,7 @@ function removeCorrectionButton(target) {
 
 function addCorrectionButton(target) {
   try {
-    if (isProtectedField(target)) return;
+    if (isProtectedField(target) || !showButton) return;
     const targetId = target.id || 'unnamed-manual';
     let btn = document.querySelector(`.grammar-check-btn[data-target-id="${targetId}"]`);
     
@@ -399,10 +403,10 @@ function addCorrectionButton(target) {
     }
 
     btn = document.createElement('div');
-    btn.innerText = 'G';
+    btn.innerText = 'Pr';
     btn.className = 'grammar-check-btn';
     btn.setAttribute('data-target-id', targetId);
-    btn.style.cssText = 'position:absolute;cursor:pointer;background:#000;color:#fff;padding:4px 8px;font-size:11px;font-weight:bold;z-index:100000;border:1px solid #000;box-shadow:4px 4px 0px #000;transition:transform 0.1s;';
+    btn.style.cssText = 'position:absolute;cursor:pointer;background:#fff;color:#000;padding:4px 8px;font-size:11px;font-weight:bold;z-index:100000;border:1px solid #000;box-shadow:4px 4px 0px #000;transition:transform 0.1s;';
     btn.title = 'Correct Grammar';
 
     btn.onmouseover = () => btn.style.transform = 'translate(-1px, -1px)';
@@ -426,14 +430,14 @@ function addCorrectionButton(target) {
           setInputValue(target, response.corrected);
           target.dispatchEvent(new Event('input', { bubbles: true }));
           btn.innerText = '✔';
-          setTimeout(() => { btn.innerText = 'G'; }, 1000);
+          setTimeout(() => { btn.innerText = 'Pr'; }, 1000);
         } else {
           btn.innerText = '✘';
-          setTimeout(() => { btn.innerText = 'G'; }, 2000);
+          setTimeout(() => { btn.innerText = 'Pr'; }, 2000);
         }
       } catch (error) {
         btn.innerText = '✘';
-        setTimeout(() => { btn.innerText = 'G'; }, 2000);
+        setTimeout(() => { btn.innerText = 'Pr'; }, 2000);
       }
     };
 
