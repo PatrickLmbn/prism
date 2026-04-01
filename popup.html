@@ -185,6 +185,61 @@
         border-left-color: #444;
         color: #999;
     }
+    body.theme-dark .blacklist-item {
+      border-color: #333;
+      background: #1e1e1e;
+    }
+    .blacklist-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 8px;
+      background: #f9f9f9;
+      border: 1px solid #eee;
+      border-radius: 4px;
+      margin-bottom: 4px;
+      font-size: 12px;
+    }
+    .remove-btn {
+      cursor: pointer;
+      color: #999;
+      font-weight: bold;
+      padding: 0 4px;
+    }
+    .remove-btn:hover {
+      color: #ff4444;
+    }
+    .blacklist-input-group {
+      display: flex;
+      gap: 4px;
+      margin-top: 8px;
+    }
+    .blacklist-input-group input {
+      flex: 1;
+      padding: 6px;
+      font-size: 11px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    .blacklist-input-group button {
+      padding: 6px 10px;
+      font-size: 10px;
+      font-weight: bold;
+      background: #000;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    body.theme-dark .blacklist-input-group input {
+      background: #1e1e1e;
+      color: #fff;
+      border-color: #444;
+    }
+    body.theme-dark .blacklist-input-group button {
+      background: #eee;
+      color: #000;
+    }
 </style>
 </head>
 <body>
@@ -253,6 +308,22 @@
                 <input type="checkbox" id="blockSensitiveToggle">
                 <span class="slider"></span>
             </label>
+        </div>
+
+        <div class="settings-title" id="blacklistSectionTitle">DOMAIN BLACKLIST</div>
+        <div class="toggle-group" id="blacklistToggleGroup">
+            <span class="toggle-label" id="currentDomainLabel">Disable on this site</span>
+            <label class="switch">
+                <input type="checkbox" id="blacklistToggle">
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div id="blacklistContainer" style="margin-top: 10px; max-height: 100px; overflow-y: auto;">
+            <!-- Blacklisted domains will appear here -->
+        </div>
+        <div class="blacklist-input-group">
+            <input type="text" id="manualBlacklistInput" placeholder="Add domain (e.g. example.com)">
+            <button id="addBlacklistBtn">ADD</button>
         </div>
 
         <div class="settings-title">MANUAL TOOLS</div>

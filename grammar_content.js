@@ -29,7 +29,20 @@ let showButton = true;
 let currentTheme = 'light';
 
 // Load initial state
-chrome.storage.local.get(['autoSuggest', 'blockEmail', 'blockSensitive', 'blockPassword', 'tone', 'showExplanations', 'showButton', 'theme'], (result) => {
+chrome.storage.local.get(['autoSuggest', 'blockEmail', 'blockSensitive', 'blockPassword', 'tone', 'showExplanations', 'showButton', 'theme', 'blacklist'], (result) => {
+  const blacklist = result.blacklist || [];
+  const currentHost = window.location.hostname;
+  
+  const isBlacklisted = blacklist.some(domain => {
+    return currentHost === domain || currentHost.endsWith('.' + domain);
+  });
+
+  if (isBlacklisted) {
+    console.log("Prism is disabled on this domain.");
+    return;
+  }
+
+  // Proceed with initialization
   autoSuggestEnabled = result.autoSuggest || false;
   blockEmail = result.blockEmail !== false;
   blockSensitive = result.blockSensitive !== false;
@@ -38,7 +51,11 @@ chrome.storage.local.get(['autoSuggest', 'blockEmail', 'blockSensitive', 'blockP
   showExplanations = result.showExplanations || false;
   showButton = result.showButton !== false;
   currentTheme = result.theme || 'light';
+
+  setupPrism();
 });
+
+function setupPrism() {
 
 // Listen for state changes
 chrome.storage.onChanged.addListener((changes) => {
@@ -487,3 +504,24 @@ function updateButtonPosition(btn, target) {
     btn.style.left = `${window.scrollX + rect.right - 25}px`;
   } catch (e) {}
 }
+
+function setupMutationObserver() {
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.addedNodes.length > 0) {
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === 1) {
+            if (isSupportedInput(node)) {
+                // If it's a new input, we might want to check it or add a button
+            }
+          }
+        });
+      }
+    });
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
+}
+
+setupMutationObserver();
+
+} // End of setupPrism

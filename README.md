@@ -11,6 +11,7 @@ A minimalist, high-end AI writing companion for Chrome. Prism doesn't just fix y
 - **Privacy-First**: Automatic protection for sensitive fields like passwords, emails, and API keys.
 - **Minimalist UI**: Injected suggestion boxes and manual correction buttons follow a premium, non-intrusive aesthetic.
 - **Dark Mode Support**: Seamlessly switches between Light, Dark, and System themes.
+- **Domain Blacklist**: Disable Prism on specific websites (like internal dashboards) to prevent AI interference.
 - **Manual Correction Tools**: A dedicated area in the popup for quick text checks.
 
 ## 🚀 Getting Started
@@ -39,6 +40,12 @@ When enabled, Prism will subtly suggest improvements as you type.
 ### Manual Correction
 - Look for the **Pr** button on text fields to trigger a quick check.
 - Or use the **Enable Manual Correction** toggle in the popup to paste text directly.
+
+### Domain Blacklist
+Manage which websites Prism stays active on.
+- **Quick Toggle**: While on a site, open the popup and toggle **Disable on [domain]**.
+- **Manual Entry**: Type a domain (e.g. `example.com`) into the input field at the bottom and click **ADD**.
+- **Remove**: Click the **✕** next to any domain in the list to re-enable Prism.
 
 ## 🛡️ Privacy
 Prism is built with your privacy in mind:
