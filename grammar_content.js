@@ -25,13 +25,11 @@ function safeTrim(val) {
   return val.trim();
 }
 
-let tone = 'Professional';
-let showExplanations = false;
-
 let showButton = true;
+let currentTheme = 'light';
 
 // Load initial state
-chrome.storage.local.get(['autoSuggest', 'blockEmail', 'blockSensitive', 'blockPassword', 'tone', 'showExplanations', 'showButton'], (result) => {
+chrome.storage.local.get(['autoSuggest', 'blockEmail', 'blockSensitive', 'blockPassword', 'tone', 'showExplanations', 'showButton', 'theme'], (result) => {
   autoSuggestEnabled = result.autoSuggest || false;
   blockEmail = result.blockEmail !== false;
   blockSensitive = result.blockSensitive !== false;
@@ -39,6 +37,7 @@ chrome.storage.local.get(['autoSuggest', 'blockEmail', 'blockSensitive', 'blockP
   tone = result.tone || 'Professional';
   showExplanations = result.showExplanations || false;
   showButton = result.showButton !== false;
+  currentTheme = result.theme || 'light';
 });
 
 // Listen for state changes
@@ -50,7 +49,34 @@ chrome.storage.onChanged.addListener((changes) => {
   if (changes.tone) tone = changes.tone.newValue;
   if (changes.showExplanations) showExplanations = changes.showExplanations.newValue;
   if (changes.showButton) showButton = changes.showButton.newValue;
+  if (changes.theme) currentTheme = changes.theme.newValue;
 });
+
+function getThemeColors() {
+    let isDark = currentTheme === 'dark';
+    if (currentTheme === 'system') {
+        isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+    
+    if (isDark) {
+        return {
+            bg: '#1e1e1e',
+            text: '#fff',
+            border: '#444',
+            shadow: '#000',
+            btnBg: '#eee',
+            btnText: '#000'
+        };
+    }
+    return {
+        bg: '#fff',
+        text: '#000',
+        border: '#000',
+        shadow: '#000',
+        btnBg: '#000',
+        btnText: '#fff'
+    };
+}
 
 function isProtectedField(el) {
   try {
@@ -233,18 +259,20 @@ async function showSuggestionUI(target) {
     suggestionContainer.className = 'grammar-suggestion-ui';
     suggestionContainer.setAttribute('data-target-id', targetId);
     
+    const colors = getThemeColors();
+    
     // Antigravity-style premium minimalist styling
     suggestionContainer.style.cssText = `
       position: absolute;
-      background: #ffffff;
-      border: 1px solid #000000;
+      background: ${colors.bg};
+      border: 1px solid ${colors.border};
       padding: 16px;
       z-index: 2147483647;
-      box-shadow: 6px 6px 0px #000000;
+      box-shadow: 6px 6px 0px ${colors.shadow};
       max-width: 340px;
       min-width: 240px;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      color: #000000;
+      color: ${colors.text};
       border-radius: 2px;
       animation: grammarFadeIn 0.2s ease-out;
     `;
@@ -282,18 +310,18 @@ async function showSuggestionUI(target) {
     suggestionContainer.innerHTML = `
       <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
         <div style="display: flex; align-items: center; gap: 6px;">
-          <div style="width: 6px; height: 6px; background: #000; border-radius: 50%;"></div>
-          <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; color: #000; font-weight: 700; opacity: 0.7;">Grammar</div>
+          <div style="width: 6px; height: 6px; background: ${colors.text}; border-radius: 50%;"></div>
+          <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; color: ${colors.text}; font-weight: 700; opacity: 0.7;">Grammar</div>
         </div>
         <div style="position: relative; display: flex; align-items: center;">
-          <div id="qMark" class="grammar-q-mark" style="cursor:help; font-size: 12px; font-weight: bold; border: 1px solid #000; width: 14px; height: 14px; display: flex; align-items: center; justify-content: center; border-radius: 50%; opacity: 0.5; transition: opacity 0.2s; visibility: hidden;">?</div>
-          <div id="explanationBox" class="grammar-explanation-tooltip"></div>
+          <div id="qMark" class="grammar-q-mark" style="cursor:help; font-size: 12px; font-weight: bold; border: 1px solid ${colors.border}; width: 14px; height: 14px; display: flex; align-items: center; justify-content: center; border-radius: 50%; opacity: 0.5; transition: opacity 0.2s; visibility: hidden;">?</div>
+          <div id="explanationBox" class="grammar-explanation-tooltip" style="background: ${colors.bg}; color: ${colors.text}; border-color: ${colors.border}; shadow-color: ${colors.shadow}"></div>
         </div>
       </div>
-      <div id="suggestionText" style="font-size: 13px; margin-bottom: 12px; font-weight: 400; line-height: 1.4; color: #1a1a1a;">Correcting...</div>
+      <div id="suggestionText" style="font-size: 13px; margin-bottom: 12px; font-weight: 400; line-height: 1.4; color: ${colors.text};">Correcting...</div>
       <div style="display: flex; gap: 8px;">
-        <button id="acceptBtn" class="grammar-btn-primary" style="background: #000; color: #fff; border: 1px solid #000; padding: 5px 12px; cursor: pointer; flex: 1; font-weight: 600; font-size: 11px; letter-spacing: 0.3px; transition: background 0.2s;">ACCEPT</button>
-        <button id="declineBtn" class="grammar-btn-secondary" style="background: #fff; color: #000; border: 1px solid #000; padding: 5px 12px; cursor: pointer; flex: 1; font-weight: 600; font-size: 11px; letter-spacing: 0.3px; transition: background 0.2s;">DECLINE</button>
+        <button id="acceptBtn" class="grammar-btn-primary" style="background: ${colors.btnBg}; color: ${colors.btnText}; border: 1px solid ${colors.btnBg}; padding: 5px 12px; cursor: pointer; flex: 1; font-weight: 600; font-size: 11px; letter-spacing: 0.3px; transition: background 0.2s;">ACCEPT</button>
+        <button id="declineBtn" class="grammar-btn-secondary" style="background: ${colors.bg}; color: ${colors.text}; border: 1px solid ${colors.border}; padding: 5px 12px; cursor: pointer; flex: 1; font-weight: 600; font-size: 11px; letter-spacing: 0.3px; transition: background 0.2s;">DECLINE</button>
       </div>
     `;
 
@@ -402,11 +430,12 @@ function addCorrectionButton(target) {
       return;
     }
 
+    const colors = getThemeColors();
     btn = document.createElement('div');
     btn.innerText = 'Pr';
     btn.className = 'grammar-check-btn';
     btn.setAttribute('data-target-id', targetId);
-    btn.style.cssText = 'position:absolute;cursor:pointer;background:#fff;color:#000;padding:4px 8px;font-size:11px;font-weight:bold;z-index:100000;border:1px solid #000;box-shadow:4px 4px 0px #000;transition:transform 0.1s;';
+    btn.style.cssText = `position:absolute;cursor:pointer;background:${colors.bg};color:${colors.text};padding:4px 8px;font-size:11px;font-weight:bold;z-index:100000;border:1px solid ${colors.border};box-shadow:4px 4px 0px ${colors.shadow};transition:transform 0.1s;`;
     btn.title = 'Correct Grammar';
 
     btn.onmouseover = () => btn.style.transform = 'translate(-1px, -1px)';

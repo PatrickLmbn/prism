@@ -1,5 +1,5 @@
 // Load saved settings
-chrome.storage.local.get(['autoSuggest', 'blockEmail', 'blockSensitive', 'blockPassword', 'tone', 'showExplanations', 'showManual', 'showButton'], (result) => {
+chrome.storage.local.get(['autoSuggest', 'blockEmail', 'blockSensitive', 'blockPassword', 'tone', 'showExplanations', 'showManual', 'showButton', 'theme'], (result) => {
     document.getElementById('autoSuggestToggle').checked = result.autoSuggest || false;
     document.getElementById('blockEmailToggle').checked = result.blockEmail !== false;
     document.getElementById('blockSensitiveToggle').checked = result.blockSensitive !== false;
@@ -8,13 +8,31 @@ chrome.storage.local.get(['autoSuggest', 'blockEmail', 'blockSensitive', 'blockP
     document.getElementById('showExplanationsToggle').checked = result.showExplanations || false;
     document.getElementById('showButtonToggle').checked = result.showButton !== false;
     
+    // Theme logic
+    const theme = result.theme || 'light';
+    document.getElementById('themeSelect').value = theme;
+    applyTheme(theme);
+
     // Toggle manual section visibility
     const showManual = result.showManual || false;
     document.getElementById('showManualToggle').checked = showManual;
     document.getElementById('manualCorrectionSection').style.display = showManual ? 'block' : 'none';
 });
 
+function applyTheme(theme) {
+    let isDark = theme === 'dark';
+    if (theme === 'system') {
+        isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+    document.body.classList.toggle('theme-dark', isDark);
+}
+
 // Save settings
+document.getElementById('themeSelect').addEventListener('change', (e) => {
+    const theme = e.target.value;
+    chrome.storage.local.set({ theme: theme });
+    applyTheme(theme);
+});
 document.getElementById('autoSuggestToggle').addEventListener('change', (e) => {
     chrome.storage.local.set({ autoSuggest: e.target.checked });
 });
