@@ -1,11 +1,16 @@
 // Load saved settings
-chrome.storage.local.get(['autoSuggest', 'blockEmail', 'blockSensitive', 'blockPassword', 'tone', 'showExplanations'], (result) => {
+chrome.storage.local.get(['autoSuggest', 'blockEmail', 'blockSensitive', 'blockPassword', 'tone', 'showExplanations', 'showManual'], (result) => {
     document.getElementById('autoSuggestToggle').checked = result.autoSuggest || false;
     document.getElementById('blockEmailToggle').checked = result.blockEmail !== false;
     document.getElementById('blockSensitiveToggle').checked = result.blockSensitive !== false;
     document.getElementById('blockPasswordToggle').checked = result.blockPassword !== false;
     document.getElementById('toneSelect').value = result.tone || 'Professional';
     document.getElementById('showExplanationsToggle').checked = result.showExplanations || false;
+    
+    // Toggle manual section visibility
+    const showManual = result.showManual || false;
+    document.getElementById('showManualToggle').checked = showManual;
+    document.getElementById('manualCorrectionSection').style.display = showManual ? 'block' : 'none';
 });
 
 // Save settings
@@ -26,6 +31,11 @@ document.getElementById('toneSelect').addEventListener('change', (e) => {
 });
 document.getElementById('showExplanationsToggle').addEventListener('change', (e) => {
     chrome.storage.local.set({ showExplanations: e.target.checked });
+});
+document.getElementById('showManualToggle').addEventListener('change', (e) => {
+    const isChecked = e.target.checked;
+    chrome.storage.local.set({ showManual: isChecked });
+    document.getElementById('manualCorrectionSection').style.display = isChecked ? 'block' : 'none';
 });
 
 document.getElementById('correctBtn').addEventListener('click', async () => {
