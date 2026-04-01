@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "Prism",
+  "version": "1.0",
+  "description": "A minimalist AI writing companion that refines your voice and adapts to your tone.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "contextMenus",
+    "storage"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["grammar_content.js"],
+      "css": ["content.css"]
+    }
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

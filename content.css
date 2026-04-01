@@ -1,0 +1,13 @@
+/* Minimalist common styles */
+body {
+    background-color: white;
+    color: black;
+}
+
+.grammar-check-btn {
+    transition: transform 0.2s;
+}
+
+.grammar-check-btn:hover {
+    transform: scale(1.1);
+}
